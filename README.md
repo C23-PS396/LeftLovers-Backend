@@ -2,6 +2,10 @@
 
 This repository contains backend services from the C23-PS396 Bangkit 2023 team to provide API endpoints for our applications.
 
+### Documentation
+
+- https://leftlovers-backend-nqh3dgyegq-et.a.run.app/docs/#/
+
 ### Features
 
 - Authentication and Authorization for CUSTOMER and SELLER
@@ -41,7 +45,7 @@ GO_API_URL=
 **Start the server:**
 
 ```console
-$ npm start dev
+$ npm run dev
 ```
 
 **View the website at: http://localhost:8000**
