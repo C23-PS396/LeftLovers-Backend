@@ -11,6 +11,9 @@ import customer from "./user/customer";
 import seller from "./user/seller";
 import merhcant from "./merhcant/merchant";
 import location from "./location/location";
+import food from "./food/food";
+import foodCategory from "./food/foodCategory";
+import category from "./food/category";
 
 const sequelize = new Sequelize(db_name, db_user, db_password, {
   dialect: "postgres",
@@ -25,6 +28,13 @@ const Seller = seller(sequelize);
 
 // MERCHANT
 const Merchant = merhcant(sequelize);
+
+// FOOD
+const Food = food(sequelize);
+const FoodCategories = foodCategory(sequelize);
+const Categories = category(sequelize);
+
+// LOCATION
 const Location = location(sequelize);
 
 // Associasion
@@ -38,4 +48,22 @@ Seller.hasOne(Merchant, { foreignKey: "sellerId" });
 Merchant.belongsTo(Location, { foreignKey: "locationId" });
 Location.hasOne(Merchant, { foreignKey: "locationId" });
 
-export { Sequelize, sequelize, Role, Customer, Seller, Merchant, Location };
+Merchant.hasMany(Food, { foreignKey: "merchantId" });
+Food.belongsTo(Merchant, { foreignKey: "merchantId" });
+Food.hasMany(FoodCategories, { foreignKey: "foodId" });
+FoodCategories.belongsTo(Food, { foreignKey: "foodId" });
+Categories.hasMany(FoodCategories, { foreignKey: "categoriesId" });
+FoodCategories.belongsTo(Categories, { foreignKey: "categoriesId" });
+
+export {
+  Sequelize,
+  sequelize,
+  Role,
+  Customer,
+  Seller,
+  Merchant,
+  Location,
+  Food,
+  FoodCategories,
+  Categories,
+};

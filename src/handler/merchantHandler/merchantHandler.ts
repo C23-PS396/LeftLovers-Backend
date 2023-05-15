@@ -41,10 +41,10 @@ export const registerMerchant = async (req: Request, res: Response) => {
     sellerId,
     profilePictureUrl,
   })
-    .then((merchant) => {
+    .then((merchantObj) => {
       return res.status(201).send({
         message: "Merchant succefully registered",
-        merchant,
+        data: merchantObj,
       });
     })
     .catch((err: Error) => {
