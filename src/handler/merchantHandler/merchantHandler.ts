@@ -19,12 +19,12 @@ export const registerMerchant = async (req: Request, res: Response) => {
 
   const merchant = await Merchant.findOne({
     where: {
-      [Op.or]: [{ name: name }, { sellerId: sellerId }],
+      [Op.or]: [{ name }, { sellerId }],
     },
   });
 
   if (merchant) {
-    if (merchant.name == name) {
+    if (merchant.name === name) {
       return res.status(403).send({
         message: `Merchant with name ${name} already exist! Use another name`,
       });
@@ -36,15 +36,15 @@ export const registerMerchant = async (req: Request, res: Response) => {
   }
 
   Merchant.create({
-    name: name,
-    locationId: locationId,
-    sellerId: sellerId,
-    profilePictureUrl: profilePictureUrl,
+    name,
+    locationId,
+    sellerId,
+    profilePictureUrl,
   })
     .then((merchant) => {
       return res.status(201).send({
         message: "Merchant succefully registered",
-        merchant: merchant,
+        merchant,
       });
     })
     .catch((err: Error) => {
@@ -62,7 +62,7 @@ export const getAllMerchant = async (_req: Request, res: Response) => {
 
 export const getMerchantById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const merchant = await Merchant.findOne({ where: { id: id } });
+  const merchant = await Merchant.findOne({ where: { id } });
 
   if (!merchant) {
     return res.status(400).send({

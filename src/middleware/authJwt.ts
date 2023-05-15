@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { secret } from "../config/config";
+import { secret } from "../../config/config";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomRequest } from "../types/types";
 
@@ -8,7 +8,7 @@ export const verifyToken = (
   res: Response,
   next: NextFunction
 ) => {
-  let token: string | undefined = req.headers["authorization"] as
+  let token: string | undefined = req.headers.authorization as
     | string
     | undefined;
 

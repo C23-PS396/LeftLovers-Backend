@@ -1,22 +1,22 @@
 import { Request, Response } from "express";
 import { Location } from "../../models";
-import { go_api_key, go_api_url } from "../../config/config";
+import { go_api_key, go_api_url } from "../../../config/config";
 import axios from "axios";
 
 export const registerLocation = (req: Request, res: Response) => {
   const { province, regency, district, village, fullLocation } = req.body;
 
   Location.create({
-    province: province,
-    regency: regency,
-    district: district,
-    village: village,
-    fullLocation: fullLocation,
+    province,
+    regency,
+    district,
+    village,
+    fullLocation,
   })
     .then((location) => {
       return res.status(201).send({
         message: "Location has sucefully registered",
-        location: location,
+        location,
       });
     })
     .catch((err: Error) => {

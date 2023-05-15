@@ -24,10 +24,10 @@ export const checkDuplicateUsernameOrEmail = async (
     where: {
       [Op.or]: [
         {
-          username: username,
+          username,
         },
         {
-          email: email,
+          email,
         },
       ],
     },

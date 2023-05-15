@@ -5,7 +5,7 @@ import {
   db_user,
   db_password,
   db_port,
-} from "../config/config";
+} from "../../config/config";
 import role from "./user/role";
 import customer from "./user/customer";
 import seller from "./user/seller";

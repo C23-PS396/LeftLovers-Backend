@@ -1,5 +1,3 @@
-export { db_host, db_name, db_user, db_port, db_password } from "./config";
-
 import { db_host, db_name, db_password, db_port, db_user } from "./config";
 
 const database = {

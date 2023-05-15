@@ -26,7 +26,7 @@ const router = Router();
  *           schema:
  *             type: object
  *             properties:
- *               fullname: 
+ *               fullname:
  *                 type: string
  *               email:
  *                 type: string
@@ -75,7 +75,7 @@ router.post(
  *           schema:
  *             type: object
  *             properties:
- *               credential: 
+ *               credential:
  *                 type: string
  *               password:
  *                 type: string

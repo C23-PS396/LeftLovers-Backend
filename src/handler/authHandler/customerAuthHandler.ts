@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { Op } from "sequelize";
-import { secret } from "../../config/config";
+import { secret } from "../../../config/config";
 import jwt from "jsonwebtoken";
 import { Customer, Role } from "../../models";
 
@@ -17,9 +17,9 @@ export const sinupCustomer = async (req: Request, res: Response) => {
   });
 
   Customer.create({
-    username: username,
+    username,
     password: encryptedPassword,
-    email: email,
+    email,
     roleId: role?.id as string,
   })
     .then((customer) => {
@@ -66,7 +66,7 @@ export const signinCustomer = async (req: Request, res: Response) => {
     },
   });
 
-  var token = jwt.sign(
+  const token = jwt.sign(
     {
       id: customer.id,
       username: customer.username,
