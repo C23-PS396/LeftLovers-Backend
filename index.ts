@@ -1,5 +1,6 @@
 import bodyParser from "body-parser";
 import express from "express";
+import cors from "cors";
 import morgan from "morgan";
 import { port } from "./config/config";
 import createInitialRole from "./src/utils/createInitialRole";
@@ -21,6 +22,7 @@ sequelize.sync({ alter: true }).then(async () => {
 
 const app = express();
 
+app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
