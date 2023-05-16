@@ -3,8 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 
 interface FoodCategoryAttributes {
   id: string;
-  idFood: string;
-  idCategory: string;
+  foodId: string;
+  categoryId: string;
 }
 
 interface FoodCategoryCreationnalAttributes
@@ -27,7 +27,7 @@ export default (sequelize: Sequelize) => {
       unique: true,
       defaultValue: () => uuidv4(),
     },
-    idFood: {
+    foodId: {
       allowNull: false,
       type: DataTypes.UUID,
       references: {
@@ -35,7 +35,7 @@ export default (sequelize: Sequelize) => {
         model: "foods",
       },
     },
-    idCategory: {
+    categoryId: {
       allowNull: false,
       type: DataTypes.UUID,
       references: {

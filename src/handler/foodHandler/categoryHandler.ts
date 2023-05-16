@@ -1,28 +1,28 @@
 import { Request, Response } from "express";
-import { Categories } from "../../models";
+import { Category } from "../../models";
 import logger from "../../utils/logger";
 import { startCase } from "lodash";
 
-export const addCategories = async (req: Request, res: Response) => {
-  const { categories } = req.body;
-  const categoryList = categories as string[];
+export const addCategory = async (req: Request, res: Response) => {
+  const { category } = req.body;
+  const categoryList = category as string[];
   const data: object[] = [];
 
   await Promise.all(
     categoryList.map(async (name) => {
-      const [category, created] = await Categories.findOrCreate({
+      const [categoryRes, created] = await Category.findOrCreate({
         where: {
           name: startCase(name),
         },
       });
       if (created) {
         data.push({
-          category,
+          category: categoryRes,
           status: "Successfully created",
         });
       } else {
         data.push({
-          category,
+          categpory: categoryRes,
           status: "Already created",
         });
       }
@@ -38,7 +38,7 @@ export const addCategories = async (req: Request, res: Response) => {
 
 export const getCategoryById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const category = await Categories.findOne({ where: { id } });
+  const category = await Category.findOne({ where: { id } });
 
   return res
     .status(200)
@@ -46,9 +46,9 @@ export const getCategoryById = async (req: Request, res: Response) => {
 };
 
 export const getAllCategory = async (_req: Request, res: Response) => {
-  const categories = await Categories.findAll();
+  const category = await Category.findAll();
 
   return res
     .status(200)
-    .send({ message: "Sucessfully get all the category", data: categories });
+    .send({ message: "Sucessfully get all the category", data: category });
 };

@@ -10,6 +10,7 @@ import sellerAuthRouter from "./src/routes/auth/seller";
 import locationRouter from "./src/routes/location/location";
 import merchantRouter from "./src/routes/merchant/merchant";
 import categoryRouter from "./src/routes/food/category";
+import foodRouter from "./src/routes/food/food";
 import { swaggerDocs } from "./src/utils/swagger";
 import logger from "./src/utils/logger";
 
@@ -31,6 +32,7 @@ app.use("/api/v1/auth/customer", customerAuthRouter);
 app.use("/api/v1/auth/seller", sellerAuthRouter);
 app.use("/api/v1/location", locationRouter);
 app.use("/api/v1/merchant", merchantRouter);
+app.use("/api/v1/food", foodRouter);
 app.use("/api/v1/food/category", categoryRouter);
 
 app.listen(port, () => {

@@ -31,8 +31,8 @@ const Merchant = merhcant(sequelize);
 
 // FOOD
 const Food = food(sequelize);
-const FoodCategories = foodCategory(sequelize);
-const Categories = category(sequelize);
+const FoodCategory = foodCategory(sequelize);
+const Category = category(sequelize);
 
 // LOCATION
 const Location = location(sequelize);
@@ -50,10 +50,10 @@ Location.hasOne(Merchant, { foreignKey: "locationId" });
 
 Merchant.hasMany(Food, { foreignKey: "merchantId" });
 Food.belongsTo(Merchant, { foreignKey: "merchantId" });
-Food.hasMany(FoodCategories, { foreignKey: "foodId" });
-FoodCategories.belongsTo(Food, { foreignKey: "foodId" });
-Categories.hasMany(FoodCategories, { foreignKey: "categoriesId" });
-FoodCategories.belongsTo(Categories, { foreignKey: "categoriesId" });
+Food.hasMany(FoodCategory, { foreignKey: "foodId" });
+FoodCategory.belongsTo(Food, { foreignKey: "foodId" });
+Category.hasMany(FoodCategory, { foreignKey: "categoryId" });
+FoodCategory.belongsTo(Category, { foreignKey: "categoryId" });
 
 export {
   Sequelize,
@@ -64,6 +64,6 @@ export {
   Merchant,
   Location,
   Food,
-  FoodCategories,
-  Categories,
+  FoodCategory,
+  Category,
 };

@@ -6,11 +6,12 @@ interface FoodAttributes {
   name: string;
   price: number;
   merchantId: string;
+  pictureUrl?: string;
 }
 
 interface FoodCreationalAttributes extends Optional<FoodAttributes, "id"> {}
 
-interface FoodInstance
+export interface FoodInstance
   extends Model<FoodAttributes, FoodCreationalAttributes>,
     FoodAttributes {
   createdAt?: Date;
@@ -34,6 +35,9 @@ export default (sequelize: Sequelize) => {
     price: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    pictureUrl: {
+      type: DataTypes.STRING,
     },
     merchantId: {
       type: DataTypes.UUID,

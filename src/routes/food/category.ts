@@ -2,7 +2,7 @@ import { Router } from "express";
 import validation from "../../middleware/requestBodyValidation";
 import { body } from "express-validator";
 import {
-  addCategories,
+  addCategory,
   getAllCategory,
   getCategoryById,
 } from "../../handler/foodHandler/categoryHandler";
@@ -43,7 +43,7 @@ const router = Router();
 router.post(
   "/add",
   [validation([body("categories").isArray().exists()]), verifyToken, isSeller],
-  addCategories
+  addCategory
 );
 
 /**
