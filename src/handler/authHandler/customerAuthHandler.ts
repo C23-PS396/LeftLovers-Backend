@@ -21,12 +21,27 @@ export const signupCustomer = async (req: Request, res: Response) => {
       },
     })
     .then(async (customer) => {
+      const token = jwt.sign(
+        {
+          id: customer.id,
+          username: customer.username,
+          email: customer.email,
+          fullname: customer.fullname,
+          role: await db.role.findUnique({ where: { id: customer.roleId } }),
+        },
+        SECRET,
+        {
+          expiresIn: 60 * 60 * 24, // 24 hour
+        }
+      );
+
       return res.status(201).send({
         message: "User was registered sucessfully",
         data: await db.customer.findUnique({
           where: { id: customer.id },
           include: { role: true },
         }),
+        token: token,
       });
     })
     .catch((err: Error) => {
@@ -61,6 +76,7 @@ export const signinCustomer = async (req: Request, res: Response) => {
       id: customer.id,
       username: customer.username,
       email: customer.email,
+      fullname: customer.fullname,
       role: customer.role.name,
     },
     SECRET,
