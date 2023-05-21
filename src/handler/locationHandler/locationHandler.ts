@@ -1,18 +1,21 @@
 import { Request, Response } from "express";
-import { Location } from "../../models";
-import { go_api_key, go_api_url } from "../../../config/config";
 import axios from "axios";
+import db from "../../../config/db";
+import { GO_API_KEY, GO_API_URL } from "../../../config/config";
 
-export const registerLocation = (req: Request, res: Response) => {
+export const registerLocation = async (req: Request, res: Response) => {
   const { province, regency, district, village, fullLocation } = req.body;
 
-  Location.create({
-    province,
-    regency,
-    district,
-    village,
-    fullLocation,
-  })
+  db.location
+    .create({
+      data: {
+        province,
+        regency,
+        district,
+        village,
+        fullLocation,
+      },
+    })
     .then((location) => {
       return res.status(201).send({
         message: "Location has sucefully registered",
@@ -20,17 +23,15 @@ export const registerLocation = (req: Request, res: Response) => {
       });
     })
     .catch((err: Error) => {
-      return res.status(500).send({
-        message: err,
-      });
+      return res.status(5000).send({ message: err });
     });
 };
 
 export const getProvince = async (_req: Request, res: Response) => {
-  const url = `${go_api_url}/regional/provinsi`;
+  const url = `${GO_API_URL}/regional/provinsi`;
 
   const params = {
-    api_key: go_api_key,
+    api_key: GO_API_KEY,
   };
 
   try {
@@ -44,10 +45,10 @@ export const getProvince = async (_req: Request, res: Response) => {
 
 export const getRegency = async (req: Request, res: Response) => {
   const { province_id } = req.query;
-  const url = `${go_api_url}/regional/kota`;
+  const url = `${GO_API_URL}/regional/kota`;
 
   const params = {
-    api_key: go_api_key,
+    api_key: GO_API_KEY,
     provinsi_id: province_id,
   };
 
@@ -62,10 +63,10 @@ export const getRegency = async (req: Request, res: Response) => {
 
 export const getDistrict = async (req: Request, res: Response) => {
   const { regency_id } = req.query;
-  const url = `${go_api_url}/regional/kecamatan`;
+  const url = `${GO_API_URL}/regional/kecamatan`;
 
   const params = {
-    api_key: go_api_key,
+    api_key: GO_API_KEY,
     kota_id: regency_id,
   };
 
@@ -80,10 +81,10 @@ export const getDistrict = async (req: Request, res: Response) => {
 
 export const getVillage = async (req: Request, res: Response) => {
   const { district_id } = req.query;
-  const url = `${go_api_url}/regional/kelurahan`;
+  const url = `${GO_API_URL}/regional/kelurahan`;
 
   const params = {
-    api_key: go_api_key,
+    api_key: GO_API_KEY,
     kecamatan_id: district_id,
   };
 

@@ -1,32 +1,34 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { Op } from "sequelize";
-import { secret } from "../../../config/config";
 import jwt from "jsonwebtoken";
-import { Role, Seller } from "../../models";
+import db from "../../../config/db";
+import { SECRET } from "../../../config/config";
 
 export const signupSeller = async (req: Request, res: Response) => {
-  const { fullname, username, email, password } = req.body;
+  const { username, fullname, email, password } = req.body;
 
   const encryptedPassword = bcrypt.hashSync(password);
 
-  const role = await Role.findOne({
-    where: {
-      name: "seller",
-    },
-  });
+  const role = await db.role.findUnique({ where: { name: "seller" } });
 
-  Seller.create({
-    fullname,
-    username,
-    password: encryptedPassword,
-    email,
-    roleId: role?.id as string,
-  })
-    .then((seller) => {
-      return res
-        .status(201)
-        .send({ message: "User was registered sucessfully", data: seller });
+  db.seller
+    .create({
+      data: {
+        username,
+        password: encryptedPassword,
+        email,
+        roleId: role?.id as string,
+        fullname,
+      },
+    })
+    .then(async (seller) => {
+      return res.status(201).send({
+        message: "User was registered sucessfully",
+        data: await db.seller.findUnique({
+          where: { id: seller.id },
+          include: { role: true },
+        }),
+      });
     })
     .catch((err: Error) => {
       return res.status(500).send({ message: err });
@@ -36,57 +38,41 @@ export const signupSeller = async (req: Request, res: Response) => {
 export const signinSeller = async (req: Request, res: Response) => {
   const { credential, password } = req.body;
 
-  const seller = await Seller.findOne({
+  const sellers = await db.seller.findMany({
     where: {
-      [Op.or]: [
-        {
-          email: credential,
-        },
-        {
-          username: credential,
-        },
-      ],
+      OR: [{ email: credential }, { username: credential }],
     },
-    include: Role,
+    include: { role: true },
   });
 
-  if (!seller) {
+  if (sellers.length === 0) {
     return res.status(400).send({ message: "User not found" });
   }
 
-  const passwordIsValid = bcrypt.compareSync(password, seller?.password);
+  const seller = sellers[0];
+
+  const passwordIsValid = bcrypt.compareSync(password, seller.password);
 
   if (!passwordIsValid) {
     return res.status(400).send({ message: "Wrong password" });
   }
-
-  const role = await Role.findOne({
-    where: {
-      id: seller.roleId,
-    },
-  });
 
   const token = jwt.sign(
     {
       id: seller.id,
       username: seller.username,
       email: seller.email,
-      role: role?.name,
+      role: seller.role.name,
     },
-    secret,
+    SECRET,
     {
-      expiresIn: 60 * 60, // 1 hour
+      expiresIn: 60 * 60 * 24, // 24 hour
     }
   );
 
   res.status(200).send({
     message: "User signed in successfully",
-    data: {
-      id: seller.id,
-      username: seller.username,
-      email: seller.email,
-      roles: role?.name,
-      accessToken: token,
-    },
+    data: seller,
+    token,
   });
 };

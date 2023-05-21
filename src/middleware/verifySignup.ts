@@ -1,48 +1,40 @@
 import { NextFunction, Request, Response } from "express";
 import { validate } from "email-validator";
-import { Customer, Seller } from "../models";
-import { Op } from "sequelize";
+import db from "../../config/db";
 
 export const checkDuplicateUsernameOrEmail = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  let userType;
+  let users;
+  const { email, username } = req.body;
 
   if (req.baseUrl.includes("customer")) {
-    userType = Customer;
+    users = await db.customer.findMany({
+      where: { OR: [{ username }, { email }] },
+    });
   } else if (req.baseUrl.includes("seller")) {
-    userType = Seller;
+    users = await db.seller.findMany({
+      where: { OR: [{ username }, { email }] },
+    });
   } else {
     return res.status(401).send({ message: "Wrong url path" });
   }
 
-  const { email, username } = req.body;
-
-  const user = await userType.findOne({
-    where: {
-      [Op.or]: [
-        {
-          username,
-        },
-        {
-          email,
-        },
-      ],
-    },
-  });
-
-  if (!user) {
+  if (users.length === 0) {
     next();
-  } else if (user.username === username) {
-    return res
-      .status(409)
-      .send({ message: `User with usename ${username} already exist!` });
   } else {
-    return res
-      .status(409)
-      .send({ message: `User with email ${email} already exist!` });
+    const user = users[0];
+    if (user.username === username) {
+      return res
+        .status(409)
+        .send({ message: `User with usename ${username} already exist!` });
+    } else {
+      return res
+        .status(409)
+        .send({ message: `User with email ${email} already exist!` });
+    }
   }
 };
 

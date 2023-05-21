@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  sinupCustomer,
+  signupCustomer,
   signinCustomer,
 } from "../../handler/authHandler/customerAuthHandler";
 import validation from "../../middleware/requestBodyValidation";
@@ -55,7 +55,7 @@ router.post(
     checkDuplicateUsernameOrEmail,
     checkEmailIsValid,
   ],
-  sinupCustomer
+  signupCustomer
 );
 
 /**

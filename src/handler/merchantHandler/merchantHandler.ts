@@ -1,29 +1,24 @@
 import { Request, Response } from "express";
-import { Op } from "sequelize";
-import { Merchant, Location } from "../../models";
+import db from "../../../config/db";
 
 export const registerMerchant = async (req: Request, res: Response) => {
   const { name, locationId, sellerId, profilePictureUrl } = req.body;
-
-  const location = await Location.findOne({
-    where: {
-      id: locationId,
-    },
-  });
+  const location = await db.location.findUnique({ where: { id: locationId } });
 
   if (!location) {
     return res.status(403).send({
-      message: "Location isn't valid",
+      message: "Location isn't found",
     });
   }
 
-  const merchant = await Merchant.findOne({
+  const merhcants = await db.merchant.findMany({
     where: {
-      [Op.or]: [{ name }, { sellerId }],
+      OR: [{ name }, { sellerId }],
     },
   });
 
-  if (merchant) {
+  if (merhcants.length > 0) {
+    const merchant = merhcants[0];
     if (merchant.name === name) {
       return res.status(403).send({
         message: `Merchant with name ${name} already exist! Use another name`,
@@ -35,16 +30,22 @@ export const registerMerchant = async (req: Request, res: Response) => {
     }
   }
 
-  Merchant.create({
-    name,
-    locationId,
-    sellerId,
-    profilePictureUrl,
-  })
-    .then((merchantObj) => {
+  db.merchant
+    .create({
+      data: {
+        name,
+        locationId,
+        sellerId,
+        profilePictureUrl,
+      },
+    })
+    .then(async (merchant) => {
       return res.status(201).send({
         message: "Merchant succefully registered",
-        data: merchantObj,
+        data: await db.merchant.findUnique({
+          where: { id: merchant.id },
+          include: { seller: true, location: true },
+        }),
       });
     })
     .catch((err: Error) => {
@@ -53,7 +54,9 @@ export const registerMerchant = async (req: Request, res: Response) => {
 };
 
 export const getAllMerchant = async (_req: Request, res: Response) => {
-  const merchants = await Merchant.findAll();
+  const merchants = await db.merchant.findMany({
+    include: { seller: true, location: true },
+  });
 
   return res.status(200).send({
     data: merchants,
@@ -62,7 +65,10 @@ export const getAllMerchant = async (_req: Request, res: Response) => {
 
 export const getMerchantById = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const merchant = await Merchant.findOne({ where: { id } });
+  const merchant = await db.merchant.findUnique({
+    where: { id },
+    include: { seller: true, location: true },
+  });
 
   if (!merchant) {
     return res.status(400).send({

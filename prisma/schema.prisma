@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @unique
+
+  Customer Customer[]
+  Seller   Seller[]
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  fullname  String?
+  username  String   @unique
+  email     String   @unique
+  password  String
+
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId String
+}
+
+model Seller {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  fullname  String
+  username  String   @unique
+  email     String   @unique
+  password  String
+
+  role     Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId   String
+  Merchant Merchant[]
+}
+
+model Location {
+  id           String     @id @default(uuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt()
+  province     String
+  regency      String
+  district     String
+  village      String
+  fullLocation String
+  Merchant     Merchant[]
+}
+
+model Merchant {
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt()
+  name              String   @unique
+  profilePictureUrl String?
+
+  seller     Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId   String
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  locationId String
+  Food       Food[]
+}
+
+model Food {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt()
+  name       String
+  pictureUrl String?
+  price      Int
+
+  category   Category[]
+  merchant   Merchant     @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId String
+  ActiveFood ActiveFood[]
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  name      String   @unique
+
+  food Food[]
+}
+
+model ActiveFood {
+  id               String   @id @default(uuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt()
+  stock            Int
+  startTime        DateTime @default(now())
+  endTime          DateTime
+  durationInSecond Int
+  isActive         Boolean
+
+  food   Food   @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId String @unique
+}

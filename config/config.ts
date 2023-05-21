@@ -2,13 +2,14 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-export const port = Number(process.env.API_PORT);
-export const db_host = String(process.env.DB_HOST);
-export const db_port = Number(process.env.DB_PORT);
-export const db_name = String(process.env.DB_NAME);
-export const db_user = String(process.env.DB_USER);
-export const db_password = String(process.env.DB_PASSWORD);
+export const PORT = Number(process.env.API_PORT);
+export const DB_HOST = String(process.env.DB_HOST);
+export const DB_PORT = Number(process.env.DB_PORT);
+export const DB_NAME = String(process.env.DB_NAME);
+export const DB_USER = String(process.env.DB_USER);
+export const DB_PASSWORD = String(process.env.DB_PASSWORD);
+export const DATABASE_URL = String(process.env.DATABASE_URL);
 
-export const secret = String(process.env.SECRET);
-export const go_api_key = String(process.env.GO_API_KEY);
-export const go_api_url = String(process.env.GO_API_URL);
+export const SECRET = String(process.env.SECRET);
+export const GO_API_KEY = String(process.env.GO_API_KEY);
+export const GO_API_URL = String(process.env.GO_API_URL);

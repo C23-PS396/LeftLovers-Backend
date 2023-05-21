@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { secret } from "../../config/config";
+import { SECRET } from "../../config/config";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomRequest } from "../types/types";
 
@@ -20,7 +20,7 @@ export const verifyToken = (
     token = token.split(" ")[1];
   }
 
-  jwt.verify(token, secret, (err, decoded) => {
+  jwt.verify(token, SECRET, (err: any, decoded) => {
     if (err) {
       return res.status(401).send({
         message: "Unauthorized!",

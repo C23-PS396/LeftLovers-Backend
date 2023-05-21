@@ -2,7 +2,7 @@ import { Router } from "express";
 import validation from "../../middleware/requestBodyValidation";
 import { body } from "express-validator";
 import { isSeller, verifyToken } from "../../middleware/authJwt";
-import { addFoods } from "../../handler/foodHandler/foodHandler";
+import { activateFood, addFoods } from "../../handler/foodHandler/foodHandler";
 
 const router = Router();
 
@@ -62,6 +62,57 @@ router.post(
     isSeller,
   ],
   addFoods
+);
+
+/**
+ * @swagger
+ * /api/v1/food/active:
+ *   post:
+ *     summary: Activate food items
+ *     tags:
+ *       - Food
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               merchantId:
+ *                 type: string
+ *               foods:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     foodId:
+ *                       type: string
+ *                     stock:
+ *                       type: number
+ *                     durationInHour:
+ *                       type: number
+ *     responses:
+ *       200:
+ *         description: Food items activated successfully
+ *       400:
+ *         description: Bad request. Invalid request body format
+ *       500:
+ *         description: Internal server error
+ */
+router.post(
+  "/active",
+  [
+    validation([
+      body("merchantId").exists().isUUID(),
+      body("foods").exists().isArray(),
+      body("foods.*.foodId").exists().isUUID(),
+      body("foods.*.stock").exists().isNumeric(),
+      body("foods.*.durationInHour").exists().isNumeric(),
+    ]),
+    verifyToken,
+    isSeller,
+  ],
+  activateFood
 );
 
 export default router;
