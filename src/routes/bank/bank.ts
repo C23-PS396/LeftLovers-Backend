@@ -80,6 +80,6 @@ router.post(
  *       500:
  *         description: Internal server error
  */
-router.get("/", [verifyToken, isSeller], getBank);
+router.get("/", getBank);
 
 export default router;

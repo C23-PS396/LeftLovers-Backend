@@ -58,8 +58,6 @@ router.post(
       body("village").exists(),
       body("fullLocation").exists(),
     ]),
-    verifyToken,
-    isSeller,
   ],
   registerLocation
 );
@@ -109,10 +107,7 @@ router.get("/province", [verifyToken], getProvince);
  */
 router.get(
   "/regency",
-  [
-    validation([query("province_id").exists()]), // Request validation middleware
-    verifyToken, // Authorization middleware
-  ],
+  [validation([query("province_id").exists()])],
   getRegency
 );
 
@@ -144,7 +139,6 @@ router.get(
   "/district",
   [
     validation([query("regency_id").exists()]), // Request validation middleware
-    verifyToken, // Authorization middleware
   ],
   getDistrict
 );
@@ -175,7 +169,7 @@ router.get(
  */
 router.get(
   "/village",
-  [validation([query("district_id").exists()]), verifyToken],
+  [validation([query("district_id").exists()])],
   getVillage
 );
 
