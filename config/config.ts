@@ -13,3 +13,5 @@ export const DATABASE_URL = String(process.env.DATABASE_URL);
 export const SECRET = String(process.env.SECRET);
 export const GO_API_KEY = String(process.env.GO_API_KEY);
 export const GO_API_URL = String(process.env.GO_API_URL);
+export const ILUMA_API_URL = String(process.env.ILUMA_API_URL);
+export const ILUMA_API_KEY = String(process.env.ILUMA_API_KEY);

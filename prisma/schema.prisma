@@ -26,8 +26,9 @@ model Customer {
   email     String   @unique
   password  String
 
-  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  roleId String
+  role        Role          @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId      String
+  Transaction Transaction[]
 }
 
 model Seller {
@@ -42,6 +43,20 @@ model Seller {
   role     Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId   String
   Merchant Merchant[]
+  Bank     Bank[]
+}
+
+model Bank {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt()
+  name          String
+  code          String
+  swiftCode     String
+  accountNumber String
+
+  seller   Seller @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId String
 }
 
 model Location {
@@ -63,11 +78,12 @@ model Merchant {
   name              String   @unique
   profilePictureUrl String?
 
-  seller     Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  sellerId   String
-  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  locationId String
-  Food       Food[]
+  seller      Seller        @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId    String
+  location    Location      @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  locationId  String
+  Food        Food[]
+  Transaction Transaction[]
 }
 
 model Food {
@@ -78,10 +94,24 @@ model Food {
   pictureUrl String?
   price      Int
 
-  category   Category[]
-  merchant   Merchant     @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  category    Category[]
+  transaction Transaction[]
+  ActiveFood  ActiveFood[]
+  merchant    Merchant      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchantId  String
+}
+
+model Transaction {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt()
+  totalprice Int
+
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  food       Food[]
+  merchant   Merchant? @relation(fields: [merchantId], references: [id])
   merchantId String
-  ActiveFood ActiveFood[]
+  customerId String
 }
 
 model Category {
