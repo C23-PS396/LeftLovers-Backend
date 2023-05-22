@@ -79,7 +79,7 @@ router.post(
  *       500:
  *         description: Internal server error.
  */
-router.get("/province", [verifyToken], getProvince);
+router.get("/province", getProvince);
 
 /**
  * @swagger
