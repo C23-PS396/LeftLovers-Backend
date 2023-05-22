@@ -27,7 +27,7 @@ export const signupCustomer = async (req: Request, res: Response) => {
           username: customer.username,
           email: customer.email,
           fullname: customer.fullname,
-          role: await db.role.findUnique({ where: { id: customer.roleId } }),
+          role: "customer",
         },
         SECRET,
         {

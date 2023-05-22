@@ -28,7 +28,7 @@ export const signupSeller = async (req: Request, res: Response) => {
           username: seller.username,
           email: seller.email,
           fullname: seller.fullname,
-          role: await db.role.findUnique({ where: { id: seller.roleId } }),
+          role: "seller",
         },
         SECRET,
         {
