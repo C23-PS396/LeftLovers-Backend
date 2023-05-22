@@ -1,5 +1,4 @@
 export interface FoodDto {
-  [x: string]: any;
   name: string;
   price: number;
   pictureUrl: string;
