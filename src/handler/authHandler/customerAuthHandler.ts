@@ -41,7 +41,7 @@ export const signupCustomer = async (req: Request, res: Response) => {
           where: { id: customer.id },
           include: { role: true },
         }),
-        token: token,
+        token,
       });
     })
     .catch((err: Error) => {

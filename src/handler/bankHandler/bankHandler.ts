@@ -4,13 +4,14 @@ import axios from "axios";
 import { ILUMA_API_KEY, ILUMA_API_URL } from "../../../config/config";
 import { Request, Response } from "express";
 import db from "../../../config/db";
+import logger from "../../utils/logger";
 
 export const addBankAccount = async (req: Request, res: Response) => {
   const { sellerId, accounts } = req.body;
   const data: { message: string; data?: Bank }[] = [];
 
   const sellerCount = await db.seller.count({ where: { id: sellerId } });
-  if (sellerCount == 0) {
+  if (sellerCount === 0) {
     return res
       .status(400)
       .send({ message: `Seller with id ${sellerId} not found` });
@@ -21,13 +22,13 @@ export const addBankAccount = async (req: Request, res: Response) => {
       try {
         const accountCount = await db.bank.count({
           where: {
-            sellerId: sellerId,
+            sellerId,
             accountNumber: accountItem.accountNumber,
             name: accountItem.name,
           },
         });
 
-        if (accountCount != 0) {
+        if (accountCount !== 0) {
           data.push({ message: "User has already have that account" });
         } else {
           const account = await db.bank.create({
@@ -36,7 +37,7 @@ export const addBankAccount = async (req: Request, res: Response) => {
               code: accountItem.code,
               swiftCode: accountItem.swiftCode,
               accountNumber: accountItem.accountNumber,
-              sellerId: sellerId,
+              sellerId,
             },
           });
           data.push({ message: "Account successfully added", data: account });
@@ -47,7 +48,7 @@ export const addBankAccount = async (req: Request, res: Response) => {
     })
   );
 
-  return res.status(200).send({ data: data });
+  return res.status(200).send({ data });
 };
 
 export const getBank = async (req: Request, res: Response) => {
@@ -62,7 +63,7 @@ export const getBank = async (req: Request, res: Response) => {
     );
     return res.status(200).send({ data: result.data });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).send({ error: "Internal Server Error" });
   }
 };

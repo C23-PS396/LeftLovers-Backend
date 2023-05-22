@@ -171,8 +171,8 @@ export const buyFood = async (req: Request, res: Response) => {
   let transaction = await db.transaction.create({
     data: {
       totalprice: 0,
-      merchantId: merchantId,
-      customerId: customerId,
+      merchantId,
+      customerId,
       isValid: true,
       isPaid: false,
       payConfirmed: false,
@@ -202,7 +202,7 @@ export const buyFood = async (req: Request, res: Response) => {
           } else {
             message = `Food with id ${foodItem.foodId} is not available now`;
           }
-          result.push({ message: message });
+          result.push({ message });
         } else if ((activeFood?.stock as number) < foodItem.quantity) {
           result.push({
             message: `Foods with name ${
@@ -265,5 +265,5 @@ export const buyFood = async (req: Request, res: Response) => {
 
   return res
     .status(status)
-    .send({ data: transaction, result: result, message: messageData });
+    .send({ data: transaction, result, message: messageData });
 };

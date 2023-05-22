@@ -42,7 +42,7 @@ export const signupSeller = async (req: Request, res: Response) => {
           where: { id: seller.id },
           include: { role: true },
         }),
-        token: token,
+        token,
       });
     })
     .catch((err: Error) => {
