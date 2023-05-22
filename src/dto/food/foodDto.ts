@@ -11,3 +11,9 @@ export interface ActiveFoodDto {
   durationInHour: number;
   isActive?: boolean;
 }
+
+export interface FoodTransaction {
+  merchantId: string;
+  customerId: string;
+  foods: { foodId: string; quantity: number }[];
+}

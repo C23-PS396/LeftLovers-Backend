@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
-import { ActiveFoodDto, FoodDto } from "../../dto/food/foodDto";
+import {
+  ActiveFoodDto,
+  FoodDto,
+  FoodTransaction,
+} from "../../dto/food/foodDto";
 import db from "../../../config/db";
 import { Food, Category } from "@prisma/client";
 import { calculateEndDate } from "../../utils/getEndDate";
@@ -145,4 +149,121 @@ export const activateFood = async (req: Request, res: Response) => {
   );
 
   return res.status(201).send({ data });
+};
+
+export const buyFood = async (req: Request, res: Response) => {
+  const { merchantId, customerId, foods }: FoodTransaction = req.body;
+
+  const merchant = await db.merchant.findUnique({ where: { id: merchantId } });
+  if (!merchant) {
+    return res
+      .status(400)
+      .send({ message: `Merchant with id ${merchantId} not found` });
+  }
+
+  const customer = await db.customer.findUnique({ where: { id: customerId } });
+  if (!customer) {
+    return res
+      .status(400)
+      .send({ message: `Customer with id ${customerId} not found` });
+  }
+
+  let transaction = await db.transaction.create({
+    data: {
+      totalprice: 0,
+      merchantId: merchantId,
+      customerId: customerId,
+      isValid: true,
+      isPaid: false,
+      payConfirmed: false,
+      isDone: false,
+    },
+  });
+  let totalPrice = 0;
+  const result: { message: string }[] = [];
+
+  await Promise.all(
+    foods.map(async (foodItem) => {
+      try {
+        const activeFood = await db.activeFood.findUnique({
+          where: { foodId: foodItem.foodId },
+          include: { food: true },
+        });
+
+        if (
+          !activeFood ||
+          (!activeFood?.isActive && activeFood.endTime < new Date())
+        ) {
+          let message = "";
+          if (activeFood?.food.name) {
+            message = `Food with name ${
+              activeFood?.food.name as string
+            } is not available now`;
+          } else {
+            message = `Food with id ${foodItem.foodId} is not available now`;
+          }
+          result.push({ message: message });
+        } else if ((activeFood?.stock as number) < foodItem.quantity) {
+          result.push({
+            message: `Foods with name ${
+              activeFood?.food.name as string
+            } out of the stock`,
+          });
+        } else {
+          result.push({
+            message: `Food with name ${
+              activeFood?.food.name as string
+            } succesfully added`,
+          });
+          await db.foodTransaction.create({
+            data: {
+              foodId: foodItem.foodId,
+              quantity: foodItem.quantity,
+              foodName: activeFood?.food.name as string,
+              foodPrice: activeFood?.food.price as number,
+              transactionId: transaction.id,
+            },
+          });
+
+          totalPrice +=
+            ((
+              await db.food.findUnique({
+                where: { id: foodItem.foodId },
+              })
+            )?.price as number) * foodItem.quantity;
+
+          await db.activeFood.update({
+            where: { foodId: foodItem.foodId },
+            data: {
+              stock: (activeFood?.stock as number) - foodItem.quantity,
+            },
+          });
+        }
+      } catch (err) {
+        logger.error(err);
+      }
+    })
+  );
+  let messageData = "";
+  let status = 0;
+
+  if (totalPrice > 0) {
+    transaction = await db.transaction.update({
+      where: { id: transaction.id },
+      data: { totalprice: totalPrice },
+      include: { food: true },
+    });
+    messageData = "Transaction succesfull";
+    status = 200;
+  } else {
+    transaction = await db.transaction.delete({
+      where: { id: transaction.id },
+    });
+    messageData = "Transaction failed!";
+    status = 400;
+  }
+
+  return res
+    .status(status)
+    .send({ data: transaction, result: result, message: messageData });
 };

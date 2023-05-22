@@ -95,23 +95,40 @@ model Food {
   price      Int
 
   category    Category[]
-  transaction Transaction[]
+  transaction FoodTransaction[]
   ActiveFood  ActiveFood[]
-  merchant    Merchant      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchant    Merchant          @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId  String
 }
 
 model Transaction {
-  id         String   @id @default(uuid())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt()
-  totalprice Int
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt()
+  totalprice   Int
+  isValid      Boolean
+  isPaid       Boolean
+  payConfirmed Boolean
+  isDone       Boolean
 
-  customer   Customer? @relation(fields: [customerId], references: [id])
-  food       Food[]
-  merchant   Merchant? @relation(fields: [merchantId], references: [id])
+  customer   Customer?         @relation(fields: [customerId], references: [id])
+  food       FoodTransaction[]
+  merchant   Merchant?         @relation(fields: [merchantId], references: [id])
   merchantId String
   customerId String
+}
+
+model FoodTransaction {
+  id            String       @id @default(uuid())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt()
+  quantity      Int
+  foodName      String
+  foodPrice     Int
+  Food          Food?        @relation(fields: [foodId], references: [id])
+  foodId        String?
+  Transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  transactionId String?
 }
 
 model Category {
