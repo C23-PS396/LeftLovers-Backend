@@ -91,6 +91,6 @@ router.get("/:id", [verifyToken, isSeller], getCategoryById);
  *       500:
  *         description: Internal server error
  */
-router.get("/", [verifyToken, isSeller], getAllCategory);
+router.get("/", getAllCategory);
 
 export default router;
