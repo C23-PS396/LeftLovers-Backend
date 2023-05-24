@@ -42,7 +42,12 @@ export const getCategoryById = async (req: Request, res: Response) => {
 };
 
 export const getAllCategory = async (_req: Request, res: Response) => {
-  const category = await db.category.findMany();
+  const category = await db.category.findMany({
+    select: {
+      name: true,
+      id: true,
+    },
+  });
 
   return res
     .status(200)
