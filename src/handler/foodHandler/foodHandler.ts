@@ -50,7 +50,7 @@ export const addFoods = async (req: Request, res: Response) => {
           const food = await db.food.create({
             data: {
               name: foodObj.name,
-              price: foodObj.price,
+              price: Number(foodObj.price),
               pictureUrl: foodObj.pictureUrl,
               merchantId,
               category: {

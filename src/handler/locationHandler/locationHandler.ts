@@ -23,7 +23,7 @@ export const registerLocation = async (req: Request, res: Response) => {
       });
     })
     .catch((err: Error) => {
-      return res.status(5000).send({ message: err });
+      return res.status(500).send({ message: err });
     });
 };
 
