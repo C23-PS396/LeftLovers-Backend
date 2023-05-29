@@ -1,11 +1,12 @@
 import { Router } from "express";
 import validation from "../../middleware/requestBodyValidation";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import { isSeller, verifyToken } from "../../middleware/authJwt";
 import {
   activateFood,
   addFoods,
   buyFood,
+  getFoodByFilter,
 } from "../../handler/foodHandler/foodHandler";
 
 const router = Router();
@@ -171,5 +172,32 @@ router.post(
   ],
   buyFood
 );
+
+/**
+ * @swagger
+ * /api/v1/food:
+ *   get:
+ *     summary: Get food
+ *     tags:
+ *       - Food
+ *     parameters:
+ *       - in: query
+ *         name: merchantId
+ *         required: false
+ *         description: ID of the merchant
+ *         schema:
+ *           type: string
+ *
+ *     responses:
+ *       200:
+ *         description: Food items purchased successfully
+ *       400:
+ *         description: Bad request. Invalid request body format
+ *       401:
+ *         description: Unauthorized. Missing or invalid token
+ *       500:
+ *         description: Internal server error
+ */
+router.get("", [verifyToken, isSeller], getFoodByFilter);
 
 export default router;

@@ -1,7 +1,6 @@
 import { Router } from "express";
 import {
-  getAllMerchant,
-  getMerchantById,
+  getMerchant,
   registerMerchant,
 } from "../../handler/merchantHandler/merchantHandler";
 import { isSeller, verifyToken } from "../../middleware/authJwt";
@@ -60,9 +59,20 @@ router.post(
  * @swagger
  * /api/v1/merchant:
  *   get:
- *     summary: Get all merchants
+ *     summary: Get all merchants or filter by ID or Seller ID
  *     tags:
  *       - Merchant
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         description: ID of the merchant
+ *       - in: query
+ *         name: sellerId
+ *         schema:
+ *           type: string
+ *         description: Seller ID associated with the merchant
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -73,34 +83,6 @@ router.post(
  *       500:
  *         description: Internal server error.
  */
-router.get("/", [verifyToken, isSeller], getAllMerchant);
-
-/**
- * @swagger
- * /api/v1/merchant/{id}:
- *   get:
- *     summary: Get a merchant by ID
- *     tags:
- *       - Merchant
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: ID of the merchant
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Success. Returns the merchant details.
- *       401:
- *         description: Unauthorized. Missing or invalid token.
- *       404:
- *         description: Merchant not found.
- *       500:
- *         description: Internal server error.
- */
-router.get("/:id", [verifyToken, isSeller], getMerchantById);
+router.get("/", [verifyToken, isSeller], getMerchant);
 
 export default router;

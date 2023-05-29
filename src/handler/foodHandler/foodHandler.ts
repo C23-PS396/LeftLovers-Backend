@@ -267,3 +267,18 @@ export const buyFood = async (req: Request, res: Response) => {
     .status(status)
     .send({ data: transaction, result, message: messageData });
 };
+
+export const getFoodByFilter = async (req: Request, res: Response) => {
+  const { merchantId } = req.query;
+  let foods;
+  if (merchantId) {
+    foods = await db.food.findMany({
+      where: { merchantId: merchantId as string },
+      include: { category: true },
+    });
+  } else {
+    foods = await db.food.findMany({ include: { category: true } });
+  }
+
+  return res.status(200).send({ data: foods });
+};

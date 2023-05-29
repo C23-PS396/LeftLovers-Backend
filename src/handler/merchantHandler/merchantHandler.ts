@@ -53,24 +53,27 @@ export const registerMerchant = async (req: Request, res: Response) => {
     });
 };
 
-export const getAllMerchant = async (_req: Request, res: Response) => {
-  const merchants = await db.merchant.findMany({
-    include: { seller: true, location: true },
-  });
+export const getMerchant = async (req: Request, res: Response) => {
+  const { id, sellerId } = req.query;
+  let merchant;
 
-  return res.status(200).send({
-    data: merchants,
-  });
-};
+  if (id || sellerId) {
+    merchant = await db.merchant.findMany({
+      where: {
+        OR: [
+          { id: id as string | undefined },
+          { sellerId: sellerId as string | undefined },
+        ],
+      },
+      include: { seller: true, location: true },
+    });
+  } else {
+    merchant = await db.merchant.findMany({
+      include: { seller: true, location: true },
+    });
+  }
 
-export const getMerchantById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const merchant = await db.merchant.findUnique({
-    where: { id },
-    include: { seller: true, location: true },
-  });
-
-  if (!merchant) {
+  if (!merchant || merchant.length <= 0) {
     return res.status(400).send({
       message: "Merchant not found",
     });
