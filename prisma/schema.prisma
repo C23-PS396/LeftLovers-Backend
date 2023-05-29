@@ -96,7 +96,7 @@ model Food {
 
   category    Category[]
   transaction FoodTransaction[]
-  ActiveFood  ActiveFood[]
+  activeFood  ActiveFood?
   merchant    Merchant          @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   merchantId  String
 }

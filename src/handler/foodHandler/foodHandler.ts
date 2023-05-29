@@ -104,7 +104,7 @@ export const activateFood = async (req: Request, res: Response) => {
         const curretDate = new Date();
         if (
           activeFood &&
-          (activeFood.isActive || activeFood.endTime > curretDate)
+          (activeFood.isActive && activeFood.endTime > curretDate)
         ) {
           data.push({
             message: "Food is already active",
@@ -274,10 +274,13 @@ export const getFoodByFilter = async (req: Request, res: Response) => {
   if (merchantId) {
     foods = await db.food.findMany({
       where: { merchantId: merchantId as string },
-      include: { category: true },
+      include: { category: true, activeFood: true },
+      orderBy: { updatedAt: "desc" },
     });
   } else {
-    foods = await db.food.findMany({ include: { category: true } });
+    foods = await db.food.findMany({
+      include: { category: true, activeFood: true },
+    });
   }
 
   return res.status(200).send({ data: foods });
