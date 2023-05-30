@@ -1,11 +1,10 @@
 import { Router } from "express";
 import validation from "../../middleware/requestBodyValidation";
-import { body, param } from "express-validator";
+import { body } from "express-validator";
 import { isSeller, verifyToken } from "../../middleware/authJwt";
 import {
   activateFood,
   addFoods,
-  buyFood,
   getFoodByFilter,
 } from "../../handler/foodHandler/foodHandler";
 
@@ -118,59 +117,6 @@ router.post(
     isSeller,
   ],
   activateFood
-);
-
-/**
- * @swagger
- * /api/v1/food/buy:
- *   post:
- *     summary: Buy food items
- *     tags:
- *       - Food
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               merchantId:
- *                 type: string
- *               customerId:
- *                 type: string
- *               foods:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     foodId:
- *                       type: string
- *                     quantity:
- *                       type: number
- *     responses:
- *       200:
- *         description: Food items purchased successfully
- *       400:
- *         description: Bad request. Invalid request body format
- *       401:
- *         description: Unauthorized. Missing or invalid token
- *       500:
- *         description: Internal server error
- */
-router.post(
-  "/buy",
-  [
-    validation([
-      body("merchantId").exists().isUUID(),
-      body("customerId").exists().isUUID(),
-      body("foods").exists().isArray(),
-      body("foods.*.foodId").exists().isUUID(),
-      body("foods.*.quantity").exists().isNumeric(),
-    ]),
-    verifyToken,
-    isSeller,
-  ],
-  buyFood
 );
 
 /**
