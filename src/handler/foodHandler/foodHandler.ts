@@ -104,7 +104,9 @@ export const activateFood = async (req: Request, res: Response) => {
         const curretDate = new Date();
         if (
           activeFood &&
-          (activeFood.isActive && activeFood.endTime > curretDate)
+          activeFood.isActive &&
+          activeFood.stock &&
+          activeFood.endTime > curretDate
         ) {
           data.push({
             message: "Food is already active",
@@ -173,10 +175,7 @@ export const buyFood = async (req: Request, res: Response) => {
       totalprice: 0,
       merchantId,
       customerId,
-      isValid: true,
-      isPaid: false,
-      payConfirmed: false,
-      isDone: false,
+      status: 1,
     },
   });
   let totalPrice = 0;
@@ -266,6 +265,35 @@ export const buyFood = async (req: Request, res: Response) => {
   return res
     .status(status)
     .send({ data: transaction, result, message: messageData });
+};
+
+export const getTransaction = async (req: Request, res: Response) => {
+  const { merchantId } = req.query;
+
+  const merchant = await db.merchant.findUnique({
+    where: { id: merchantId as string | undefined },
+  });
+
+  if (!merchant)
+    return res
+      .status(400)
+      .send({ message: `Merchant with id ${merchantId} doesn;t found` });
+
+  const transaction = await db.transaction.findMany({
+    where: { merchantId: merchantId as string | undefined },
+    include: {
+      food: true,
+      customer: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  logger.info(transaction);
+
+  return res.status(200).send({
+    transaction: "Transaction has successfully fetched",
+    data: transaction,
+  });
 };
 
 export const getFoodByFilter = async (req: Request, res: Response) => {

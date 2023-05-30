@@ -102,14 +102,11 @@ model Food {
 }
 
 model Transaction {
-  id           String   @id @default(uuid())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt()
-  totalprice   Int
-  isValid      Boolean
-  isPaid       Boolean
-  payConfirmed Boolean
-  isDone       Boolean
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt()
+  totalprice Int
+  status     Int      @default(1)
 
   customer   Customer?         @relation(fields: [customerId], references: [id])
   food       FoodTransaction[]

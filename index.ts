@@ -9,6 +9,7 @@ import merchantRouter from "./src/routes/merchant/merchant";
 import categoryRouter from "./src/routes/food/category";
 import foodRouter from "./src/routes/food/food";
 import bankRouter from "./src/routes/bank/bank";
+import transactionRouter from "./src/routes/transaction/transaction";
 import { swaggerDocs } from "./src/utils/swagger";
 import logger from "./src/utils/logger";
 import { PORT } from "./config/config";
@@ -27,6 +28,7 @@ app.use("/api/v1/merchant", merchantRouter);
 app.use("/api/v1/food", foodRouter);
 app.use("/api/v1/food/category", categoryRouter);
 app.use("/api/v1/bank", bankRouter);
+app.use("/api/v1/transaction", transactionRouter);
 
 app.listen(PORT, () => {
   swaggerDocs(app, PORT);
