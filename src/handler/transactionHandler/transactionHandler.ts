@@ -149,6 +149,7 @@ export const changeTransactionStatus = async (req: Request, res: Response) => {
 
   let transaction = await db.transaction.findUnique({
     where: { id: transactionId },
+    include: { food: true, merchant: true, customer: true, review: true },
   });
 
   if (!transaction)
@@ -156,19 +157,51 @@ export const changeTransactionStatus = async (req: Request, res: Response) => {
       .status(400)
       .send({ message: `Transaction with id ${transactionId} doesn't exist` });
 
+  if (
+    (transaction.status !== 3 && Number(status) == 6) ||
+    (Number(status) !== 1 && Number(status) !== transaction.status + 1)
+  ) {
+    return res.status(400).send({
+      message: `You can't change transaction status from ${transaction.status} to ${status}`,
+    });
+  }
+
   if (status < 1 || status > 6)
     return res.status(400).send({ message: `Status=${status} is not valid` });
 
-  transaction = await db.transaction.update({
-    where: { id: transactionId },
-    data: {
-      status: Number(status),
-    },
-    include: {
-      food: true,
-      merchant: true,
-    },
-  });
+  if (status === 5) {
+    transaction = await db.transaction.update({
+      where: { id: transactionId },
+      data: {
+        status: Number(status),
+        review: {
+          create: {
+            customerId: transaction.customerId,
+            merchantId: transaction.merchantId,
+          },
+        },
+      },
+      include: {
+        food: true,
+        merchant: true,
+        customer: true,
+        review: true,
+      },
+    });
+  } else {
+    transaction = await db.transaction.update({
+      where: { id: transactionId },
+      data: {
+        status: Number(status),
+      },
+      include: {
+        food: true,
+        merchant: true,
+        customer: true,
+        review: true,
+      },
+    });
+  }
 
   return res.status(200).send({
     message: "Transaction Status has been updated",
