@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
-import {
-  ActiveFoodDto,
-  FoodDto,
-} from "../../dto/food/foodDto";
+import { ActiveFoodDto, FoodDto } from "../../dto/food/foodDto";
 import db from "../../../config/db";
-import { Food, Category } from "@prisma/client";
+import { Food, Category, Prisma } from "@prisma/client";
 import { calculateEndDate } from "../../utils/getEndDate";
 import logger from "../../utils/logger";
 
@@ -154,18 +151,17 @@ export const activateFood = async (req: Request, res: Response) => {
 
 export const getFoodByFilter = async (req: Request, res: Response) => {
   const { merchantId } = req.query;
-  let foods;
+  const where: Prisma.FoodWhereInput = {};
+
   if (merchantId) {
-    foods = await db.food.findMany({
-      where: { merchantId: merchantId as string },
-      include: { category: true, activeFood: true },
-      orderBy: { updatedAt: "desc" },
-    });
-  } else {
-    foods = await db.food.findMany({
-      include: { category: true, activeFood: true },
-    });
+    where.merchantId = merchantId as string | undefined;
   }
+
+  const foods = await db.food.findMany({
+    where: where,
+    include: { category: true, activeFood: true },
+    orderBy: { updatedAt: "desc" },
+  });
 
   return res.status(200).send({ data: foods });
 };

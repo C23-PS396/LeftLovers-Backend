@@ -83,6 +83,6 @@ router.post(
  *       500:
  *         description: Internal server error.
  */
-router.get("/", [verifyToken, isSeller], getMerchant);
+router.get("/", [verifyToken], getMerchant);
 
 export default router;
