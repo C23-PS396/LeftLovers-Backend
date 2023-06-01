@@ -29,6 +29,7 @@ model Customer {
   role        Role          @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId      String
   Transaction Transaction[]
+  Review      Review[]
 }
 
 model Seller {
@@ -84,6 +85,7 @@ model Merchant {
   locationId  String
   Food        Food[]
   Transaction Transaction[]
+  Review      Review[]
 }
 
 model Food {
@@ -101,6 +103,22 @@ model Food {
   merchantId  String
 }
 
+model Review {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  rating    Int?
+  review    String?
+  isFilled  Boolean  @default(false)
+
+  customer      Customer    @relation(fields: [customerId], references: [id])
+  customerId    String
+  merchant      Merchant    @relation(fields: [merchantId], references: [id])
+  merchantId    String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId String      @unique
+}
+
 model Transaction {
   id         String   @id @default(uuid())
   createdAt  DateTime @default(now())
@@ -113,6 +131,7 @@ model Transaction {
   merchant   Merchant?         @relation(fields: [merchantId], references: [id])
   merchantId String
   customerId String
+  review     Review?
 }
 
 model FoodTransaction {
