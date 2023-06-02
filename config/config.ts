@@ -15,3 +15,8 @@ export const GO_API_KEY = String(process.env.GO_API_KEY);
 export const GO_API_URL = String(process.env.GO_API_URL);
 export const ILUMA_API_URL = String(process.env.ILUMA_API_URL);
 export const ILUMA_API_KEY = String(process.env.ILUMA_API_KEY);
+
+export const BUCKET_NAME = String(process.env.BUCKET_NAME);
+export const GOOGLE_APPLICATION_CREDENTIALS = String(
+  process.env.GOOGLE_APPLICATION_CREDENTIALS
+);
