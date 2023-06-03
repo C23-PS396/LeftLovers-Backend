@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { isSeller, verifyToken } from "../../middleware/authJwt";
+import { isCustomer, isSeller, verifyToken } from "../../middleware/authJwt";
 import validation from "../../middleware/requestBodyValidation";
 import { body, query } from "express-validator";
 import {
@@ -58,7 +58,7 @@ router.post(
       body("foods.*.quantity").exists().isNumeric(),
     ]),
     verifyToken,
-    isSeller,
+    isCustomer,
   ],
   buyFood
 );
@@ -89,7 +89,7 @@ router.post(
  */
 router.get(
   "/",
-  [validation([query("merchantId").exists().isUUID()]), verifyToken, isSeller],
+  [validation([query("merchantId").exists().isUUID()]), verifyToken],
   getTransaction
 );
 
@@ -131,7 +131,6 @@ router.post(
       body("transactionId").exists().isUUID(),
     ]),
     verifyToken,
-    isSeller,
   ],
   changeTransactionStatus
 );

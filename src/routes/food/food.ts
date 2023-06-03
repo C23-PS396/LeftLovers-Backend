@@ -144,6 +144,6 @@ router.post(
  *       500:
  *         description: Internal server error
  */
-router.get("", [verifyToken, isSeller], getFoodByFilter);
+router.get("", [verifyToken], getFoodByFilter);
 
 export default router;
