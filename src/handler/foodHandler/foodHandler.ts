@@ -158,7 +158,7 @@ export const getFoodByFilter = async (req: Request, res: Response) => {
   }
 
   const foods = await db.food.findMany({
-    where: where,
+    where,
     include: { category: true, activeFood: true },
     orderBy: { updatedAt: "desc" },
   });

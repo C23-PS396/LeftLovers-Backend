@@ -78,19 +78,7 @@ export const getMerchant = async (req: Request, res: Response) => {
     });
   }
 
-  // if (id) {
-  //   whereMerchant.OR.push = [{ id: id as string }, { sellerId: id as string }];
-  //   whereReview.merchantId = id as string;
-  // }
-
-  // if (id) whereMerchant.OR.merchantId = id as string;
-  // if (id) whereMerchant.OR.sellerId = id as string;
   if (id) whereReview.id = id as string;
-
-  // merchant = await db.merchant.findMany({
-  //   where: whereMerchant,
-  //   include: { seller: true, location: true },
-  // });
 
   const review = await db.review.groupBy({
     by: ["merchantId"],
@@ -106,7 +94,7 @@ export const getMerchant = async (req: Request, res: Response) => {
       });
     } else {
       const data = { ...merchant[0], rating: { ...review[0] } };
-      return res.status(200).send({ data: data });
+      return res.status(200).send({ data });
     }
   }
 
@@ -125,15 +113,15 @@ export const getMerchant = async (req: Request, res: Response) => {
 
   merchant.map((merchant) => {
     const idx = review.findIndex((review) => {
-      return review.merchantId == merchant.id;
+      return review.merchantId === merchant.id;
     });
     let rating = {};
     if (idx >= 0) rating = { ...review[idx] };
 
-    data.push({ ...merchant, rating: rating });
+    data.push({ ...merchant, rating });
   });
 
   return res.status(200).send({
-    data: data,
+    data,
   });
 };

@@ -32,8 +32,8 @@ export const fillReview = async (req: Request, res: Response) => {
         data: {
           review: {
             update: {
-              rating: rating,
-              review: review,
+              rating,
+              review,
               isFilled: true,
             },
           },

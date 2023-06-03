@@ -10,6 +10,6 @@ const multer = Multer({
 
 const router = Router();
 
-router.post("/", [multer.single("imgFile")], uploadFileHandler);
+router.post("/", [verifyToken, multer.single("imgFile")], uploadFileHandler);
 
 export default router;
