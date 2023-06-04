@@ -1,10 +1,11 @@
 import { Router } from "express";
 import validation from "../../middleware/requestBodyValidation";
-import { body } from "express-validator";
+import { body, query } from "express-validator";
 import { isSeller, verifyToken } from "../../middleware/authJwt";
 import {
   activateFood,
   addFoods,
+  deleteFood,
   getFoodByFilter,
 } from "../../handler/foodHandler/foodHandler";
 
@@ -157,5 +158,36 @@ router.post(
  *         description: Internal server error
  */
 router.get("", [verifyToken], getFoodByFilter);
+
+/**
+ * @swagger
+ * /api/v1/food:
+ *   delete:
+ *     summary: Delete food item
+ *     tags:
+ *       - Food
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: ID of the food item to delete
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Food item deleted successfully
+ *       400:
+ *         description: Bad request. Invalid request parameters
+ *       401:
+ *         description: Unauthorized. Missing or invalid token
+ *       500:
+ *         description: Internal server error
+ */
+router.delete(
+  "",
+  [validation([query("id").exists().isUUID()]), verifyToken, isSeller],
+  deleteFood
+);
 
 export default router;
