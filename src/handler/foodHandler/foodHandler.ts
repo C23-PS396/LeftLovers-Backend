@@ -190,3 +190,22 @@ export const getFoodByFilter = async (req: Request, res: Response) => {
 
   return res.status(200).send({ data: foods });
 };
+
+export const deleteFood = async (req: Request, res: Response) => {
+  const { id } = req.query;
+
+  const food = db.food.findUnique({ where: { id: id as string | undefined } });
+
+  if (!food) return res.status(400).send({ message: "Food is'nt exist!" });
+
+  try {
+    const deleteFood = await db.food.delete({
+      where: { id: id as string | undefined },
+    });
+    return res
+      .status(200)
+      .send({ message: `${deleteFood.name} has been deleted` });
+  } catch (err) {
+    return res.status(500).send({ message: err });
+  }
+};
