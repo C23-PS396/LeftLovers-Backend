@@ -4,6 +4,7 @@ import db from "../../../config/db";
 import { Food, Category, Prisma } from "@prisma/client";
 import { calculateEndDate } from "../../utils/getEndDate";
 import logger from "../../utils/logger";
+import { startCase } from "lodash";
 
 export const addFoods = async (req: Request, res: Response) => {
   const { foods, merchantId } = req.body;
@@ -150,11 +151,35 @@ export const activateFood = async (req: Request, res: Response) => {
 };
 
 export const getFoodByFilter = async (req: Request, res: Response) => {
-  const { merchantId } = req.query;
+  const { merchantId, isActive, category } = req.query;
   const where: Prisma.FoodWhereInput = {};
 
   if (merchantId) {
     where.merchantId = merchantId as string | undefined;
+  }
+
+  if (category) {
+    where.category = {
+      some: {
+        name: {
+          contains: startCase(category as string | undefined),
+          mode: "insensitive",
+        },
+      },
+    };
+  }
+
+  if (isActive) {
+    const active = isActive === "true" ? true : false;
+    if (active) {
+      where.activeFood = {
+        AND: [
+          { isActive: active },
+          { stock: { gt: 0 } },
+          { endTime: { lte: new Date() } },
+        ],
+      };
+    }
   }
 
   const foods = await db.food.findMany({

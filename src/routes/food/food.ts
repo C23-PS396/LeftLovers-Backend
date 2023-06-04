@@ -133,6 +133,18 @@ router.post(
  *         description: ID of the merchant
  *         schema:
  *           type: string
+ *       - in: query
+ *         name: category
+ *         required: false
+ *         description: Category of food
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: isActive
+ *         required: false
+ *         description: True if you want get just for active food
+ *         schema:
+ *           type: boolean
  *
  *     responses:
  *       200:

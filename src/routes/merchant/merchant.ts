@@ -73,6 +73,16 @@ router.post(
  *         schema:
  *           type: string
  *         description: Seller ID associated with the merchant
+ *       - in: query
+ *         name: isActive
+ *         schema:
+ *           type: boolean
+ *         description: True if you want get merchant that has active food
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Merchant that have food with this category
  *     security:
  *       - bearerAuth: []
  *     responses:

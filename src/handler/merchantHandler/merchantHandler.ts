@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import db from "../../../config/db";
 import { Location, Prisma, Seller } from "@prisma/client";
+import { startCase } from "lodash";
 
 export const registerMerchant = async (req: Request, res: Response) => {
   const { name, locationId, sellerId, profilePictureUrl } = req.body;
@@ -55,28 +56,49 @@ export const registerMerchant = async (req: Request, res: Response) => {
 };
 
 export const getMerchant = async (req: Request, res: Response) => {
-  const { id, sellerId } = req.query;
+  const { id, sellerId, isActive, category } = req.query;
 
-  const whereMerchant: Prisma.MerchantWhereInput = { OR: [] };
+  const whereMerchant: Prisma.MerchantWhereInput = {};
   const whereReview: Prisma.ReviewWhereInput = {};
 
-  let merchant;
-
   if (id || sellerId) {
-    merchant = await db.merchant.findMany({
-      where: {
-        OR: [
-          { id: id as string | undefined },
-          { sellerId: sellerId as string | undefined },
-        ].filter((obj) => obj.id || obj.sellerId), // Filters out undefined values
-      },
-      include: { seller: true, location: true },
-    });
-  } else {
-    merchant = await db.merchant.findMany({
-      include: { seller: true, location: true },
-    });
+    whereMerchant.OR = [
+      { id: id as string | undefined },
+      { sellerId: sellerId as string | undefined },
+    ];
   }
+
+  if (isActive && isActive === "true") {
+    whereMerchant.Food = {
+      some: {
+        activeFood: {
+          AND: [
+            { isActive: true, stock: { gt: 0 }, endTime: { lte: new Date() } },
+          ],
+        },
+      },
+    };
+  }
+
+  if (category) {
+    whereMerchant.Food = {
+      some: {
+        category: {
+          some: {
+            name: {
+              contains: startCase(category as string | undefined),
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+    };
+  }
+
+  const merchant = await db.merchant.findMany({
+    where: whereMerchant,
+    include: { seller: true, location: true },
+  });
 
   if (id) whereReview.id = id as string;
 
