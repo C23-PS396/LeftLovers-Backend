@@ -72,7 +72,7 @@ router.post(
  *       500:
  *         description: Internal server error
  */
-router.get("/:id", [verifyToken, isSeller], getCategoryById);
+router.get("/:id", [verifyToken], getCategoryById);
 
 /**
  * @swagger

@@ -58,7 +58,6 @@ router.post(
       body("accounts.*.accountNumber").exists().isString(),
     ]),
     verifyToken,
-    isSeller,
   ],
   addBankAccount
 );
