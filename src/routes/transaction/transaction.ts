@@ -96,7 +96,7 @@ router.get(
 /**
  * @swagger
  * /api/v1/transaction/update:
- *   post:
+ *   patch:
  *     summary: Update transaction status
  *     tags:
  *       - Transaction
@@ -123,7 +123,7 @@ router.get(
  *       500:
  *         description: Internal server error.
  */
-router.post(
+router.patch(
   "/update",
   [
     validation([
