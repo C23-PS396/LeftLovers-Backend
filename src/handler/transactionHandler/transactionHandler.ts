@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import db from "../../../config/db";
 import logger from "../../utils/logger";
 import { FoodTransaction } from "../../dto/food/foodDto";
+import getBadge from "../../utils/getBadge";
+import { Badge } from "@prisma/client";
 
 export const buyFood = async (req: Request, res: Response) => {
   const { merchantId, customerId, foods }: FoodTransaction = req.body;
@@ -104,6 +106,33 @@ export const buyFood = async (req: Request, res: Response) => {
     });
     messageData = "Transaction succesfull";
     status = 200;
+
+    const point = await db.point.findUnique({
+      where: { customerId },
+    });
+    if (point) {
+      const totalPointAfterUpdate =
+        point.loyaltyPoint + Math.round(totalPrice / 1000);
+      const badge = getBadge(totalPointAfterUpdate);
+      await db.point.update({
+        where: {
+          customerId,
+        },
+        data: {
+          loyaltyPoint: totalPointAfterUpdate,
+          badge,
+        },
+      });
+    } else {
+      const loyalty = Math.round(totalPrice / 1000);
+      await db.point.create({
+        data: {
+          customerId,
+          badge: getBadge(loyalty),
+          loyaltyPoint: loyalty,
+        },
+      });
+    }
   } else {
     transaction = await db.transaction.delete({
       where: { id: transaction.id },

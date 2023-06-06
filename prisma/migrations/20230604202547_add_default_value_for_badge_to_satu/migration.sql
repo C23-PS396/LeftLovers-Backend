@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Point" ALTER COLUMN "badge" SET DEFAULT 'SATU';

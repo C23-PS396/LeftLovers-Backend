@@ -39,7 +39,7 @@ export const signupCustomer = async (req: Request, res: Response) => {
         message: "User was registered sucessfully",
         data: await db.customer.findUnique({
           where: { id: customer.id },
-          include: { role: true },
+          include: { role: true, Point: true },
         }),
         token,
       });
@@ -56,7 +56,7 @@ export const signinCustomer = async (req: Request, res: Response) => {
     where: {
       OR: [{ email: credential }, { username: credential }],
     },
-    include: { role: true },
+    include: { role: true, Point: true },
   });
 
   if (customers.length === 0) {

@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import db from "../../../config/db";
 import { Location, Prisma, Seller } from "@prisma/client";
 import { startCase } from "lodash";
-import logger from "../../utils/logger";
 
 export const registerMerchant = async (req: Request, res: Response) => {
   const { name, locationId, sellerId, profilePictureUrl } = req.body;
@@ -107,7 +106,6 @@ export const getMerchant = async (req: Request, res: Response) => {
       { merchant: { sellerId: sellerId as string | undefined } },
     ];
   }
-  // if (id) whereRevi = id as string;
 
   const review = await db.review.groupBy({
     by: ["merchantId"],
@@ -115,8 +113,6 @@ export const getMerchant = async (req: Request, res: Response) => {
     _avg: { rating: true },
     _count: { rating: true },
   });
-
-  logger.info(review);
 
   if (id || sellerId) {
     if (!merchant || merchant.length <= 0) {
