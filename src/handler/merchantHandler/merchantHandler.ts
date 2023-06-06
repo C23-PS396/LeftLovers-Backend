@@ -73,7 +73,7 @@ export const getMerchant = async (req: Request, res: Response) => {
       some: {
         activeFood: {
           AND: [
-            { isActive: true, stock: { gt: 0 }, endTime: { lte: new Date() } },
+            { isActive: true, stock: { gt: 0 }, endTime: { gte: new Date() } },
           ],
         },
       },

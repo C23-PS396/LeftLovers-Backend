@@ -173,11 +173,9 @@ export const getFoodByFilter = async (req: Request, res: Response) => {
     const active = isActive === "true" ? true : false;
     if (active) {
       where.activeFood = {
-        AND: [
-          { isActive: active },
-          { stock: { gt: 0 } },
-          { endTime: { lte: new Date() } },
-        ],
+        isActive: true,
+        stock: { gt: 0 },
+        endTime: { gte: new Date() },
       };
     }
   }
