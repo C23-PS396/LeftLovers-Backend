@@ -3,7 +3,7 @@ import db from "../../../config/db";
 import logger from "../../utils/logger";
 import { FoodTransaction } from "../../dto/food/foodDto";
 import getBadge from "../../utils/getBadge";
-import { Badge } from "@prisma/client";
+import { Badge, Prisma } from "@prisma/client";
 
 export const buyFood = async (req: Request, res: Response) => {
   const { merchantId, customerId, foods }: FoodTransaction = req.body;
@@ -147,19 +147,19 @@ export const buyFood = async (req: Request, res: Response) => {
 };
 
 export const getTransaction = async (req: Request, res: Response) => {
-  const { merchantId } = req.query;
+  const { merchantId, customerId } = req.query;
 
-  const merchant = await db.merchant.findUnique({
-    where: { id: merchantId as string | undefined },
-  });
+  const where: Prisma.TransactionWhereInput = {};
+  if (merchantId) {
+    where.merchantId = merchantId as string | undefined;
+  }
 
-  if (!merchant)
-    return res
-      .status(400)
-      .send({ message: `Merchant with id ${merchantId} doesn;t found` });
+  if (customerId) {
+    where.customerId = customerId as string | undefined;
+  }
 
   const transaction = await db.transaction.findMany({
-    where: { merchantId: merchantId as string | undefined },
+    where: where,
     include: {
       food: true,
       customer: true,

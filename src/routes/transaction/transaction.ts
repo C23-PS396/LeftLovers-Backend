@@ -67,16 +67,20 @@ router.post(
  * @swagger
  * /api/v1/transaction:
  *   get:
- *     summary: Get all transaction based on merchantId
+ *     summary: Get list of transaction
  *     tags:
  *       - Transaction
  *     parameters:
  *       - in: query
  *         name: merchantId
- *         required: true
  *         schema:
  *           type: string
  *         description: ID of the merchant
+ *       - in: query
+ *         name: customerId
+ *         schema:
+ *           type: string
+ *         description: ID of the customer
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -89,7 +93,13 @@ router.post(
  */
 router.get(
   "/",
-  [validation([query("merchantId").exists().isUUID()]), verifyToken],
+  [
+    validation([
+      query("merchantId").optional().isUUID(),
+      query("customerId").optional().isUUID(),
+    ]),
+    verifyToken,
+  ],
   getTransaction
 );
 
