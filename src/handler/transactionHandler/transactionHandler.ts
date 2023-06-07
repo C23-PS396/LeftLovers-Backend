@@ -3,7 +3,7 @@ import db from "../../../config/db";
 import logger from "../../utils/logger";
 import { FoodTransaction } from "../../dto/food/foodDto";
 import getBadge from "../../utils/getBadge";
-import { Badge, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export const buyFood = async (req: Request, res: Response) => {
   const { merchantId, customerId, foods }: FoodTransaction = req.body;
@@ -163,6 +163,7 @@ export const getTransaction = async (req: Request, res: Response) => {
     include: {
       food: true,
       customer: true,
+      review: true,
     },
     orderBy: { createdAt: "desc" },
   });
