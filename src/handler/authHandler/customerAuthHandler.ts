@@ -31,7 +31,7 @@ export const signupCustomer = async (req: Request, res: Response) => {
         },
         SECRET,
         {
-          expiresIn: 60 * 60 * 24 * 256, // 24 hour
+          expiresIn: 60 * 60 * 24 * 256, // 1 year
         }
       );
 
