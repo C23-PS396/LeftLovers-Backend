@@ -13,6 +13,7 @@ import transactionRouter from "./src/routes/transaction/transaction";
 import reviewRouter from "./src/routes/review/review";
 import uploadRouter from "./src/routes/upload/upload";
 import gamificationRouter from "./src/routes/gamification/gamification";
+import searchRouter from "./src/routes/search/search";
 import { swaggerDocs } from "./src/utils/swagger";
 import logger from "./src/utils/logger";
 import { PORT } from "./config/config";
@@ -35,6 +36,7 @@ app.use("/api/v1/transaction", transactionRouter);
 app.use("/api/v1/review", reviewRouter);
 app.use("/api/v1/upload", uploadRouter);
 app.use("/api/v1/gamification", gamificationRouter);
+app.use("/api/v1/search", searchRouter);
 
 app.listen(PORT, () => {
   swaggerDocs(app, PORT);
