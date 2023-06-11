@@ -119,10 +119,24 @@ export const getMerchant = async (req: Request, res: Response) => {
       return res.status(400).send({
         message: "Merchant not found",
       });
-    } else {
-      const data = { ...merchant[0], rating: { ...review[0] } };
-      return res.status(200).send({ data });
     }
+
+    const statistics = await db.transaction.aggregate({
+      where: { merchantId: id as string | undefined, status: 5 },
+      _sum: {
+        totalprice: true,
+      },
+      _count: {
+        id: true,
+      },
+    });
+
+    const data = {
+      ...merchant[0],
+      rating: { ...review[0] },
+      statistic: statistics,
+    };
+    return res.status(200).send({ data });
   }
 
   const data: {
