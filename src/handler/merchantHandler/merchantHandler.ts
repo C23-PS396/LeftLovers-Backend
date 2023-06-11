@@ -122,7 +122,7 @@ export const getMerchant = async (req: Request, res: Response) => {
     }
 
     const statistics = await db.transaction.aggregate({
-      where: { merchantId: id as string | undefined, status: 5 },
+      where: { merchantId: merchant[0].id, status: 5 },
       _sum: {
         totalprice: true,
       },
