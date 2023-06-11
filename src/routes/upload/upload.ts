@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { verifyToken } from "../../middleware/authJwt";
 import Multer from "multer";
 import { uploadFileHandler } from "../../handler/uploadFileHandler/uploadFileHandler";
 
@@ -10,6 +9,6 @@ const multer = Multer({
 
 const router = Router();
 
-router.post("/", [verifyToken, multer.single("imgFile")], uploadFileHandler);
+router.post("/", [multer.single("imgFile")], uploadFileHandler);
 
 export default router;
