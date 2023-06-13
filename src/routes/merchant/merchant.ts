@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getMerchant,
+  getRecommendation,
   registerMerchant,
 } from "../../handler/merchantHandler/merchantHandler";
 import { isSeller, verifyToken } from "../../middleware/authJwt";
@@ -94,5 +95,24 @@ router.post(
  *         description: Internal server error.
  */
 router.get("/", [verifyToken], getMerchant);
+
+/**
+ * @swagger
+ * /api/v1/merchant/recommendation:
+ *   get:
+ *     summary: Get all recomended merchant
+ *     tags:
+ *       - Merchant
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success. Returns the list of merchants.
+ *       401:
+ *         description: Unauthorized. Missing or invalid token.
+ *       500:
+ *         description: Internal server error.
+ */
+router.get("/recommendation", [verifyToken], getRecommendation);
 
 export default router;

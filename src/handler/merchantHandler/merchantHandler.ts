@@ -166,3 +166,43 @@ export const getMerchant = async (req: Request, res: Response) => {
     data,
   });
 };
+
+export const getRecommendation = async (req: Request, res: Response) => {
+  const merchant = await db.merchant.findMany({
+    include: { seller: true, location: true },
+    take: 10,
+  });
+
+  const review = await db.review.groupBy({
+    by: ["merchantId"],
+    _avg: { rating: true },
+    _count: { rating: true },
+  });
+
+  const data: {
+    rating: {};
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    name: string;
+    profilePictureUrl: string | null;
+    sellerId: string;
+    locationId: string;
+    seller: Seller;
+    location: Location;
+  }[] = [];
+
+  merchant.map((merchant) => {
+    const idx = review.findIndex((review) => {
+      return review.merchantId === merchant.id;
+    });
+    let rating = {};
+    if (idx >= 0) rating = { ...review[idx] };
+
+    data.push({ ...merchant, rating });
+  });
+
+  return res.status(200).send({
+    data,
+  });
+};
