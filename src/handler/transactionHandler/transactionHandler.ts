@@ -33,6 +33,8 @@ export const buyFood = async (req: Request, res: Response) => {
   let totalPrice = 0;
   const result: { message: string }[] = [];
 
+  let categoryReq: string = "";
+
   await Promise.all(
     foods.map(async (foodItem) => {
       try {
@@ -78,6 +80,23 @@ export const buyFood = async (req: Request, res: Response) => {
 
           totalPrice += res.foodPrice * foodItem.quantity;
 
+          const food = await db.food.findUnique({
+            where: {
+              id: foodItem.foodId,
+            },
+            include: {
+              category: true,
+            },
+          });
+
+          food?.category.map((cat) => {
+            if (!categoryReq) {
+              categoryReq = categoryReq += cat.name;
+            } else {
+              categoryReq = categoryReq += `, ${cat.name}`;
+            }
+          });
+
           await db.activeFood.update({
             where: { foodId: foodItem.foodId },
             data: {
@@ -94,6 +113,7 @@ export const buyFood = async (req: Request, res: Response) => {
   let status = 0;
 
   if (totalPrice > 0) {
+    logger.info(categoryReq);
     transaction = await db.transaction.update({
       where: { id: transaction.id },
       data: { totalprice: totalPrice },
