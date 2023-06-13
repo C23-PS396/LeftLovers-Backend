@@ -11,7 +11,7 @@ export const getWeeklyLeaderboard = async (req: Request, res: Response) => {
   const leaderboard = await db.transaction.groupBy({
     by: ["customerId"],
     orderBy: { _sum: { totalprice: "desc" } },
-    where: { createdAt: { gte: startOfWeek } },
+    where: { createdAt: { gte: startOfWeek }, status: { equals: 5 } },
     take: 10,
     _sum: { totalprice: true },
   });
