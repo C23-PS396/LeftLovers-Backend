@@ -21,6 +21,12 @@ export const signupCustomer = async (req: Request, res: Response) => {
       },
     })
     .then(async (customer) => {
+      await db.userProfile.create({
+        data: {
+          id: customer.id,
+          customerId: customer.id,
+        },
+      });
       const token = jwt.sign(
         {
           id: customer.id,

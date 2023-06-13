@@ -31,6 +31,36 @@ model Customer {
   Transaction Transaction[]
   Review      Review[]
   Point       Point?
+  UserProfile UserProfile?
+}
+
+model UserProfile {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  u1        Int      @default(0)
+  u2        Int      @default(0)
+  u3        Int      @default(0)
+  u4        Int      @default(0)
+  u5        Int      @default(0)
+  u6        Int      @default(0)
+  u7        Int      @default(0)
+  u8        Int      @default(0)
+  u9        Int      @default(0)
+  u10       Int      @default(0)
+  u11       Int      @default(0)
+  u12       Int      @default(0)
+  u13       Int      @default(0)
+  u14       Int      @default(0)
+  u15       Int      @default(0)
+  u16       Int      @default(0)
+  u17       Int      @default(0)
+  u18       Int      @default(0)
+  u19       Int      @default(0)
+  u20       Int      @default(0)
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String   @unique
 }
 
 model Point {
