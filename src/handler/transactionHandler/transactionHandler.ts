@@ -66,7 +66,7 @@ export const buyFood = async (req: Request, res: Response) => {
               activeFood?.food.name as string
             } succesfully added`,
           });
-          await db.foodTransaction.create({
+          const res = await db.foodTransaction.create({
             data: {
               foodId: foodItem.foodId,
               quantity: foodItem.quantity,
@@ -76,12 +76,7 @@ export const buyFood = async (req: Request, res: Response) => {
             },
           });
 
-          totalPrice +=
-            ((
-              await db.food.findUnique({
-                where: { id: foodItem.foodId },
-              })
-            )?.price as number) * foodItem.quantity;
+          totalPrice += res.foodPrice * foodItem.quantity;
 
           await db.activeFood.update({
             where: { foodId: foodItem.foodId },
