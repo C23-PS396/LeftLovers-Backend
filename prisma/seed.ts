@@ -13,7 +13,6 @@ const seed = async () => {
   const customers = await db.customer.findMany({
     where: { UserProfile: null },
   });
-  logger.info(customers);
   await Promise.all(
     customers.map(async (customer) => {
       await db.userProfile.create({

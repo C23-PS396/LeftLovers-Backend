@@ -113,7 +113,6 @@ export const buyFood = async (req: Request, res: Response) => {
   let status = 0;
 
   if (totalPrice > 0) {
-    logger.info(categoryReq);
     transaction = await db.transaction.update({
       where: { id: transaction.id },
       data: { totalprice: totalPrice },
@@ -182,7 +181,7 @@ export const getTransaction = async (req: Request, res: Response) => {
   }
 
   const transaction = await db.transaction.findMany({
-    where: where,
+    where,
     include: {
       food: true,
       customer: true,

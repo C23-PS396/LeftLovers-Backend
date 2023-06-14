@@ -43,7 +43,7 @@ export const searchHandler = async (req: Request, res: Response) => {
     };
 
   const merchant = await db.merchant.findMany({
-    where: where,
+    where,
     include: { seller: true, location: true },
   });
 
@@ -76,5 +76,5 @@ export const searchHandler = async (req: Request, res: Response) => {
     data.push({ ...merchant, rating });
   });
 
-  return res.status(200).send({ data: data });
+  return res.status(200).send({ data });
 };

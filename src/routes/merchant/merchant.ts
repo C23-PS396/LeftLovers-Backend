@@ -2,11 +2,12 @@ import { Router } from "express";
 import {
   getMerchant,
   getRecommendation,
+  getTransactionSummary,
   registerMerchant,
 } from "../../handler/merchantHandler/merchantHandler";
 import { isSeller, verifyToken } from "../../middleware/authJwt";
 import validation from "../../middleware/requestBodyValidation";
-import { body } from "express-validator";
+import { body, query } from "express-validator";
 
 const router = Router();
 
@@ -121,5 +122,35 @@ router.get("/", [verifyToken], getMerchant);
  *         description: Internal server error.
  */
 router.get("/recommendation", [verifyToken], getRecommendation);
+
+/**
+ * @swagger
+ * /api/v1/merchant/summary:
+ *   get:
+ *     summary: Get all summary statistic
+ *     tags:
+ *       - Merchant
+ *     parameters:
+ *       - in: query
+ *         name: merchantId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the merchant
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Success. Returns the list of merchants.
+ *       401:
+ *         description: Unauthorized. Missing or invalid token.
+ *       500:
+ *         description: Internal server error.
+ */
+router.get(
+  "/summary",
+  [validation([query("merchantId").exists().isUUID()])],
+  getTransactionSummary
+);
 
 export default router;

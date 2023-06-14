@@ -5,6 +5,7 @@ import { startCase } from "lodash";
 import axios, { AxiosError } from "axios";
 import { ML_API_URL } from "../../../config/config";
 import logger from "../../utils/logger";
+import moment from "moment";
 
 export const registerMerchant = async (req: Request, res: Response) => {
   const { name, locationId, sellerId, profilePictureUrl } = req.body;
@@ -186,7 +187,6 @@ export const getRecommendation = async (req: Request, res: Response) => {
     })
     .then((response) => response.data)
     .then(async (data: string[]) => {
-      logger.info(data);
       const merchantId: string[] = [];
 
       data.map((d) => {
@@ -236,7 +236,83 @@ export const getRecommendation = async (req: Request, res: Response) => {
       });
     })
     .catch((err: AxiosError) => {
-      logger.error(err);
       return res.status(500).send(err.response?.data);
     });
+};
+
+export const getTransactionSummary = async (req: Request, res: Response) => {
+  const { merchantId } = req.query;
+  const merchant = await db.merchant.findUnique({
+    where: {
+      id: merchantId as string | undefined,
+    },
+  });
+
+  if (!merchant) return res.status(404).send({ message: "Merchant not found" });
+
+  let transaction = await db.transaction.findMany({
+    where: { merchantId: merchant.id },
+  });
+
+  let fail = 0;
+  let success = 0;
+  let pending = 0;
+  const months: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const monthName: string[] = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "June",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Des",
+  ];
+
+  transaction.map((trans) => {
+    if (trans.status === 5) {
+      success += 1;
+    } else if (trans.status === 6) {
+      fail += 1;
+    } else {
+      pending += 1;
+    }
+  });
+
+  const nineMonthsAgo = moment().subtract(9, "months").toDate();
+
+  transaction = await db.transaction.findMany({
+    where: {
+      merchantId: merchant.id,
+      status: 5,
+      createdAt: {
+        gte: nineMonthsAgo,
+      },
+    },
+  });
+
+  transaction.map((trans) => {
+    months[trans.createdAt.getMonth()] = months[trans.createdAt.getMonth()] + 1;
+  });
+
+  const realCount: number[] = [];
+  const realMonth: string[] = [];
+
+  for (let i = 1; i < 10; i++) {
+    const idx = (nineMonthsAgo.getMonth() + i) % 12;
+    realCount.push(months[idx]);
+    realMonth.push(monthName[idx]);
+  }
+
+  return res.status(200).send({
+    success,
+    fail,
+    pending,
+    month: realMonth,
+    data: realCount,
+  });
 };
