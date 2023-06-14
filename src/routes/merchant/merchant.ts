@@ -109,7 +109,7 @@ router.get("/", [verifyToken], getMerchant);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the merchant
+ *         description: ID of the customer
  *     security:
  *       - bearerAuth: []
  *     responses:
