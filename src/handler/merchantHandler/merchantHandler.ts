@@ -232,7 +232,7 @@ export const getRecommendation = async (req: Request, res: Response) => {
       });
 
       return res.status(200).send({
-        data,
+        dataResponse,
       });
     })
     .catch((err: AxiosError) => {
