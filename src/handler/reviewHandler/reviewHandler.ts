@@ -32,7 +32,7 @@ export const fillReview = async (req: Request, res: Response) => {
         data: {
           review: {
             update: {
-              rating,
+              rating: Number(rating),
               review,
               isFilled: true,
             },
