@@ -162,7 +162,7 @@ export const buyFood = async (req: Request, res: Response) => {
 };
 
 export const getTransaction = async (req: Request, res: Response) => {
-  const { merchantId, customerId } = req.query;
+  const { merchantId, customerId, merchantName } = req.query;
 
   const where: Prisma.TransactionWhereInput = {};
   if (merchantId) {
@@ -171,6 +171,14 @@ export const getTransaction = async (req: Request, res: Response) => {
 
   if (customerId) {
     where.customerId = customerId as string | undefined;
+  }
+
+  if (!merchantId && merchantName) {
+    const merchant = await db.merchant.findUnique({
+      where: { name: merchantName as string },
+    });
+
+    if (merchant) where.merchantId = merchant.id as string | undefined;
   }
 
   const transaction = await db.transaction.findMany({

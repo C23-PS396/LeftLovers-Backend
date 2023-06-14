@@ -81,6 +81,11 @@ router.post(
  *         schema:
  *           type: string
  *         description: ID of the customer
+ *       - in: query
+ *         name: merchantName
+ *         schema:
+ *           type: string
+ *         description: name of the customer
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -97,6 +102,7 @@ router.get(
     validation([
       query("merchantId").optional().isUUID(),
       query("customerId").optional().isUUID(),
+      query("merchantName").optional().isString(),
     ]),
   ],
   getTransaction
