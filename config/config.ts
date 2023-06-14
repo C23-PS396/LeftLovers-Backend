@@ -20,3 +20,5 @@ export const BUCKET_NAME = String(process.env.BUCKET_NAME);
 export const GOOGLE_APPLICATION_CREDENTIALS = String(
   process.env.GOOGLE_APPLICATION_CREDENTIALS
 );
+
+export const ML_API_URL = String(process.env.ML_API_URL);

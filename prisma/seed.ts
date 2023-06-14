@@ -1,4 +1,5 @@
 import db from "../config/db";
+import logger from "../src/utils/logger";
 
 type Role = {
   name: string;
@@ -9,9 +10,15 @@ const getRole = (): Role[] => {
 };
 
 const seed = async () => {
+  const customers = await db.customer.findMany({
+    where: { UserProfile: null },
+  });
+  logger.info(customers);
   await Promise.all(
-    getRole().map(async (role) => {
-      return await db.role.createMany({ data: [{ name: role.name }] });
+    customers.map(async (customer) => {
+      await db.userProfile.create({
+        data: { id: customer.id, customerId: customer.id },
+      });
     })
   );
 };

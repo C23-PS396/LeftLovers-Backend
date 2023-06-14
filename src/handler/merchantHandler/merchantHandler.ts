@@ -1,7 +1,10 @@
-import { Request, Response } from "express";
+import { Request, Response, response } from "express";
 import db from "../../../config/db";
 import { Location, Prisma, Seller } from "@prisma/client";
 import { startCase } from "lodash";
+import axios, { AxiosError } from "axios";
+import { ML_API_URL } from "../../../config/config";
+import logger from "../../utils/logger";
 
 export const registerMerchant = async (req: Request, res: Response) => {
   const { name, locationId, sellerId, profilePictureUrl } = req.body;
@@ -168,41 +171,72 @@ export const getMerchant = async (req: Request, res: Response) => {
 };
 
 export const getRecommendation = async (req: Request, res: Response) => {
-  const merchant = await db.merchant.findMany({
-    include: { seller: true, location: true },
-    take: 10,
-  });
+  const { customerId } = req.query;
+  const where: Prisma.CustomerWhereInput = {};
 
-  const review = await db.review.groupBy({
-    by: ["merchantId"],
-    _avg: { rating: true },
-    _count: { rating: true },
-  });
+  if (customerId) {
+    where.id = customerId as string;
+  }
 
-  const data: {
-    rating: {};
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    name: string;
-    profilePictureUrl: string | null;
-    sellerId: string;
-    locationId: string;
-    seller: Seller;
-    location: Location;
-  }[] = [];
+  await axios
+    .get(`${ML_API_URL}/getPrediction`, {
+      params: {
+        user_id: customerId as string,
+      },
+    })
+    .then((response) => response.data)
+    .then(async (data: string[]) => {
+      logger.info(data);
+      const merchantId: string[] = [];
 
-  merchant.map((merchant) => {
-    const idx = review.findIndex((review) => {
-      return review.merchantId === merchant.id;
+      data.map((d) => {
+        merchantId.push(d);
+      });
+
+      const merchant = await db.merchant.findMany({
+        where: {
+          id: {
+            in: merchantId,
+          },
+        },
+        include: { seller: true, location: true },
+      });
+
+      const review = await db.review.groupBy({
+        by: ["merchantId"],
+        _avg: { rating: true },
+        _count: { rating: true },
+      });
+
+      const dataResponse: {
+        rating: {};
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        profilePictureUrl: string | null;
+        sellerId: string;
+        locationId: string;
+        seller: Seller;
+        location: Location;
+      }[] = [];
+
+      merchant.map((merchant) => {
+        const idx = review.findIndex((review) => {
+          return review.merchantId === merchant.id;
+        });
+        let rating = {};
+        if (idx >= 0) rating = { ...review[idx] };
+
+        dataResponse.push({ ...merchant, rating });
+      });
+
+      return res.status(200).send({
+        data,
+      });
+    })
+    .catch((err: AxiosError) => {
+      logger.error(err);
+      return res.status(500).send(err.response?.data);
     });
-    let rating = {};
-    if (idx >= 0) rating = { ...review[idx] };
-
-    data.push({ ...merchant, rating });
-  });
-
-  return res.status(200).send({
-    data,
-  });
 };

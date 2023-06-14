@@ -103,6 +103,13 @@ router.get("/", [verifyToken], getMerchant);
  *     summary: Get all recomended merchant
  *     tags:
  *       - Merchant
+ *     parameters:
+ *       - in: query
+ *         name: customerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the merchant
  *     security:
  *       - bearerAuth: []
  *     responses:
