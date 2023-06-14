@@ -98,7 +98,6 @@ router.get(
       query("merchantId").optional().isUUID(),
       query("customerId").optional().isUUID(),
     ]),
-    verifyToken,
   ],
   getTransaction
 );
@@ -140,7 +139,6 @@ router.patch(
       body("status").exists().isNumeric(),
       body("transactionId").exists().isUUID(),
     ]),
-    verifyToken,
   ],
   changeTransactionStatus
 );

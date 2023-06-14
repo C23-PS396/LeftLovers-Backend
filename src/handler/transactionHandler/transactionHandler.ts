@@ -179,6 +179,7 @@ export const getTransaction = async (req: Request, res: Response) => {
       food: true,
       customer: true,
       review: true,
+      merchant: true,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -203,7 +204,9 @@ export const changeTransactionStatus = async (req: Request, res: Response) => {
       .send({ message: `Transaction with id ${transactionId} doesn't exist` });
 
   if (
-    (transaction.status !== 3 && Number(status) === 6) ||
+    (transaction.status !== 3 &&
+      transaction.status !== 2 &&
+      Number(status) === 6) ||
     (Number(status) !== 1 && Number(status) !== transaction.status + 1)
   ) {
     return res.status(400).send({
