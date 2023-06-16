@@ -8,9 +8,21 @@ This repository contains backend services from the C23-PS396 Bangkit 2023 team t
 
 ### Features
 
-- Authentication and Authorization for CUSTOMER and SELLER
+This app contains API for:
 
-### Quick Start
+- Authentication and Authorization for Customer and Seller
+- Merchant and Food management system
+- Transaction
+- Rating and Review based on the previous transaction
+- Gamification
+- Statistic Report for Seller
+- Connected with Machine Learning system
+
+### Deployment
+
+This app deployed using Cloud Run service on GCP. Step for depoyment click [here](https://docs.google.com/document/d/10G2mFqKZnszAk1w3RaccxkiMChcxvZTl-z9do75D09E/edit?pli=1)
+
+### Running on the
 
 The quickest way to get started with express is to utilize the executable [`express(1)`](https://github.com/expressjs/generator) to generate an application as shown below:
 
