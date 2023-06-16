@@ -186,6 +186,15 @@ export const getFoodByFilter = async (req: Request, res: Response) => {
     orderBy: { updatedAt: "desc" },
   });
 
+  if (merchantId) {
+    const merchant = await db.merchant.findUnique({
+      where: {
+        id: merchantId as string,
+      },
+    });
+    return res.status(200).send({ data: foods, merchant: merchant?.name });
+  }
+
   return res.status(200).send({ data: foods });
 };
 
